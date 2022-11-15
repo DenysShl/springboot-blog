@@ -1,4 +1,4 @@
-package com.example.springbootaws.dto;
+package com.example.blog.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

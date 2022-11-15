@@ -1,6 +1,6 @@
-package com.example.springbootaws.model;
+package com.example.blog.model;
 
-import com.example.springbootaws.dto.PostResponseDto;
+import com.example.blog.dto.PostResponseDto;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,10 +1,14 @@
-package com.example.springbootaws.model;
+package com.example.blog.model;
 
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,9 +33,8 @@ public class Post {
     @Column(name = "content", nullable = false)
     private String content;
 
-    public Post(String title, String description, String content) {
-        this.title = title;
-        this.description = description;
-        this.content = content;
-    }
+    @OneToMany(mappedBy = "post",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private Set<Comment> comments = new HashSet<>();
 }

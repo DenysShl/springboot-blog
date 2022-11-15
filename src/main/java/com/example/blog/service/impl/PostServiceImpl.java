@@ -1,13 +1,13 @@
-package com.example.springbootaws.service.impl;
+package com.example.blog.service.impl;
 
-import com.example.springbootaws.dto.PostRequestDto;
-import com.example.springbootaws.dto.PostResponseDto;
-import com.example.springbootaws.exception.ResourceNotFoundException;
-import com.example.springbootaws.mapper.impl.PostMapperImpl;
-import com.example.springbootaws.model.Post;
-import com.example.springbootaws.model.PostResponse;
-import com.example.springbootaws.repository.PostRepository;
-import com.example.springbootaws.service.PostService;
+import com.example.blog.dto.PostRequestDto;
+import com.example.blog.dto.PostResponseDto;
+import com.example.blog.exception.ResourceNotFoundException;
+import com.example.blog.mapper.impl.PostMapperImpl;
+import com.example.blog.model.Post;
+import com.example.blog.model.PostResponse;
+import com.example.blog.repository.PostRepository;
+import com.example.blog.service.PostService;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
@@ -21,8 +21,8 @@ import org.springframework.stereotype.Service;
 @Log4j2
 @Service
 public class PostServiceImpl implements PostService {
-    private PostRepository postRepository;
-    private PostMapperImpl postMapper;
+    private final PostRepository postRepository;
+    private final PostMapperImpl postMapper;
 
     @Autowired
     public PostServiceImpl(PostRepository postRepository, PostMapperImpl postMapper) {
@@ -47,9 +47,13 @@ public class PostServiceImpl implements PostService {
         List<Post> listOfPosts = posts.getContent();
 
         List<PostResponseDto> content = listOfPosts.stream()
-                .map(post -> postMapper.toDto(post))
+                .map(postMapper::toDto)
                 .collect(Collectors.toList());
 
+        return getPostResponse(posts, content);
+    }
+
+    private static PostResponse getPostResponse(Page<Post> posts, List<PostResponseDto> content) {
         PostResponse postResponse = new PostResponse();
         postResponse.setContent(content);
         postResponse.setPageNo(posts.getNumber());
@@ -68,14 +72,16 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponseDto update(PostRequestDto postRequestDto, Long id) {
+    public PostResponseDto update(Long id, PostRequestDto postRequestDto) {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Post", "id", String.valueOf(id))
         );
         post.setTitle(postRequestDto.getTitle());
         post.setDescription(postRequestDto.getDescription());
         post.setTitle(postRequestDto.getTitle());
-        return postMapper.toDto(postRepository.save(post));
+        Post updatePost = postRepository.save(post);
+        log.info("Success updated post {} on new post {}", post, updatePost);
+        return postMapper.toDto(updatePost);
     }
 
     @Override
@@ -84,6 +90,6 @@ public class PostServiceImpl implements PostService {
                 () -> new ResourceNotFoundException("Post", "id", String.valueOf(id))
         );
         postRepository.delete(post);
-        log.info("Success, delete student by id {}", id);
+        log.info("Success, delete post by id {}", id);
     }
 }

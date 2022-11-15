@@ -1,10 +1,10 @@
-package com.example.springbootaws.controller;
+package com.example.blog.controller;
 
-import com.example.springbootaws.dto.PostRequestDto;
-import com.example.springbootaws.dto.PostResponseDto;
-import com.example.springbootaws.model.PostResponse;
-import com.example.springbootaws.service.PostService;
-import com.example.springbootaws.utils.AppConstants;
+import com.example.blog.dto.PostRequestDto;
+import com.example.blog.dto.PostResponseDto;
+import com.example.blog.model.PostResponse;
+import com.example.blog.service.PostService;
+import com.example.blog.utils.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,6 +68,6 @@ public class PostController {
     @PutMapping("{id}")
     public ResponseEntity<PostResponseDto> update(@PathVariable("id") Long id,
                                                   @RequestBody PostRequestDto postRequestDto) {
-        return ResponseEntity.ok(postService.update(postRequestDto, id));
+        return ResponseEntity.ok(postService.update(id, postRequestDto));
     }
 }

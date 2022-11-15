@@ -1,4 +1,4 @@
-package com.example.springbootaws.mapper;
+package com.example.blog.mapper;
 
 public interface GenericMapper<T,V,U> {
     T toDto(V v);

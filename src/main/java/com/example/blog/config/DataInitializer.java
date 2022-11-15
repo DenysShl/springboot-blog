@@ -1,7 +1,7 @@
-package com.example.springbootaws.config;
+package com.example.blog.config;
 
-import com.example.springbootaws.model.Post;
-import com.example.springbootaws.repository.PostRepository;
+import com.example.blog.model.Post;
+import com.example.blog.repository.PostRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DataInitializer {
-    private static final int QUANTITY_RANDOM_POSTS = 10;
-    private PostRepository repository;
+    private static final int QUANTITY_RANDOM_POSTS = 5;
+    private final PostRepository repository;
 
     public DataInitializer(PostRepository repository) {
         this.repository = repository;
@@ -52,6 +52,10 @@ public class DataInitializer {
     }
 
     private Post getPost(String title, String description, String content) {
-        return new Post(title, description, content);
+        Post post = new Post();
+        post.setTitle(title);
+        post.setDescription(description);
+        post.setContent(content);
+        return post;
     }
 }
