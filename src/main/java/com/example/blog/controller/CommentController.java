@@ -4,6 +4,7 @@ import com.example.blog.dto.CommentRequestDto;
 import com.example.blog.dto.CommentResponseDto;
 import com.example.blog.model.CommentResponse;
 import com.example.blog.service.CommentService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,13 +33,26 @@ public class CommentController {
         return new ResponseEntity<>(commentService.create(commentRequestDto), HttpStatus.CREATED);
     }
 
+    @GetMapping("posts/{postId}/comments")
+    public ResponseEntity<List<CommentResponseDto>> getCommentsByPostId(
+            @PathVariable("postId") Long postId) {
+        return ResponseEntity.ok(commentService.getCommentsByPostId(postId));
+    }
+
+    @GetMapping("posts/{postId}/comments/{commentId}")
+    public ResponseEntity<CommentResponseDto> getCommentById(
+            @PathVariable("postId") Long postId,
+            @PathVariable("commentId") Long commentId) {
+        return ResponseEntity.ok(commentService.getCommentById(postId, commentId));
+    }
+
+    @GetMapping("posts/comments/{id}")
+    public ResponseEntity<CommentResponseDto> getById(@PathVariable("id") Long commentId) {
+        return ResponseEntity.ok(commentService.getById(commentId));
+    }
+
     @GetMapping
     public ResponseEntity<CommentResponse> getAll() {
         return null;
-    }
-
-    @GetMapping("comments/{id}")
-    public ResponseEntity<CommentResponseDto> getById(@PathVariable("id") Long commentId) {
-        return ResponseEntity.ok(commentService.getById(commentId));
     }
 }

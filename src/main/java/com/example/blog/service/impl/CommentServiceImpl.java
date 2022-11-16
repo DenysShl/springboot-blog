@@ -2,6 +2,7 @@ package com.example.blog.service.impl;
 
 import com.example.blog.dto.CommentRequestDto;
 import com.example.blog.dto.CommentResponseDto;
+import com.example.blog.exception.BlogApiException;
 import com.example.blog.exception.ResourceNotFoundException;
 import com.example.blog.mapper.impl.CommentMapperImpl;
 import com.example.blog.model.Comment;
@@ -10,8 +11,10 @@ import com.example.blog.model.Post;
 import com.example.blog.repository.CommentRepository;
 import com.example.blog.repository.PostRepository;
 import com.example.blog.service.CommentService;
+import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Log4j2
@@ -73,5 +76,28 @@ public class CommentServiceImpl implements CommentService {
         );
         commentRepository.delete(comment);
         log.info("Successes, delete comment by id {}", id);
+    }
+
+    @Override
+    public List<CommentResponseDto> getCommentsByPostId(Long postId) {
+        return commentRepository.findByPostId(postId)
+                .stream()
+                .map(commentMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public CommentResponseDto getCommentById(Long postId, Long commentId) {
+        Post post = postRepository.findById(postId).orElseThrow(
+                () -> new ResourceNotFoundException("Post", "id",
+                        String.valueOf(postId))
+        );
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new ResourceNotFoundException("Comment", "id", String.valueOf(commentId))
+        );
+        if (!comment.getPost().getId().equals(post.getId())) {
+            throw new BlogApiException(HttpStatus.BAD_REQUEST, "Comment does not belong to post ");
+        }
+        return commentMapper.toDto(comment);
     }
 }

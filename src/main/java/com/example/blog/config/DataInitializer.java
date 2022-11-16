@@ -1,8 +1,9 @@
 package com.example.blog.config;
 
+import com.example.blog.model.Comment;
 import com.example.blog.model.Post;
+import com.example.blog.repository.CommentRepository;
 import com.example.blog.repository.PostRepository;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 import javax.annotation.PostConstruct;
@@ -11,10 +12,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class DataInitializer {
     private static final int QUANTITY_RANDOM_POSTS = 5;
-    private final PostRepository repository;
+    private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
-    public DataInitializer(PostRepository repository) {
-        this.repository = repository;
+    public DataInitializer(PostRepository postRepository,
+                           CommentRepository commentRepository) {
+        this.postRepository = postRepository;
+        this.commentRepository = commentRepository;
     }
 
     @PostConstruct
@@ -22,23 +26,16 @@ public class DataInitializer {
         Post postPicture = getPost("My post #1", "This post of my picture", "foto 35");
         Post postFilm = getPost("My post #2", "This post of my film", "film 12");
         Post postCar = getPost("My post #3", "This post of my car", "BMW");
-        repository.saveAll(List.of(postPicture, postFilm, postCar));
-        repository.saveAll(getRandomPosts(QUANTITY_RANDOM_POSTS));
-        repository.saveAll(getRandomPostsByStream(QUANTITY_RANDOM_POSTS));
-    }
-
-    private List<Post> getRandomPosts(int quantity) {
-        List<Post> postList = new ArrayList<>();
-        for (int i = 1; i <= quantity; i++) {
-            postList.add(
-                    getPost(
-                            "My post #" + i,
-                            "ASD Ver " + Math.random(),
-                            "Content => " + Math.random()
-                    )
-            );
-        }
-        return postList;
+        postRepository.saveAll(List.of(postPicture, postFilm, postCar));
+        postRepository.saveAll(getRandomPostsByStream(QUANTITY_RANDOM_POSTS));
+        commentRepository.save(getComment("Den", "denys@gmail.com",
+                "solution number first by picture", postPicture));
+        commentRepository.save(getComment("Den", "denys@gmail.com",
+                "solution number first by picture", postPicture));
+        commentRepository.save(getComment("Mak", "mak@gmail.com",
+                "solution number first by car", postCar));
+        commentRepository.save(getComment("Tan", "tan@gmail.com",
+                "solution number first by film", postFilm));
     }
 
     private List<Post> getRandomPostsByStream(int quantity) {
@@ -57,5 +54,14 @@ public class DataInitializer {
         post.setDescription(description);
         post.setContent(content);
         return post;
+    }
+
+    private Comment getComment(String name, String email, String body, Post post) {
+        Comment comment = new Comment();
+        comment.setName(name);
+        comment.setEmail(email);
+        comment.setBody(body);
+        comment.setPost(post);
+        return comment;
     }
 }
