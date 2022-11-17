@@ -12,6 +12,7 @@ import com.example.blog.repository.PostRepository;
 import com.example.blog.service.CommentService;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,14 +23,16 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final CommentMapperImpl commentMapper;
+    private final ModelMapper mapper;
 
     @Autowired
     public CommentServiceImpl(CommentRepository commentRepository,
                               PostRepository postRepository,
-                              CommentMapperImpl commentMapper) {
+                              CommentMapperImpl commentMapper, ModelMapper mapper) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
         this.commentMapper = commentMapper;
+        this.mapper = mapper;
     }
 
     @Override
@@ -40,14 +43,14 @@ public class CommentServiceImpl implements CommentService {
         );
         Comment comment = commentMapper.toModel(entity);
         comment.setPost(post);
-        return commentMapper.toDto(commentRepository.save(comment));
+        return mapper.map(commentRepository.save(comment), CommentResponseDto.class);
     }
 
     @Override
     public CommentResponseDto getById(Long id) {
-        return commentMapper.toDto(commentRepository.findById(id).orElseThrow(
+        return mapper.map(commentRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Comment", "id", String.valueOf(id))
-        ));
+        ), CommentResponseDto.class);
     }
 
     @Override
@@ -60,7 +63,7 @@ public class CommentServiceImpl implements CommentService {
         comment.setBody(entity.getBody());
         Comment updateComment = commentRepository.save(comment);
         log.info("Successes, update comment by id {}, comment = {}", id, entity);
-        return commentMapper.toDto(updateComment);
+        return mapper.map(updateComment, CommentResponseDto.class);
     }
 
     @Override
@@ -76,7 +79,7 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentResponseDto> getCommentsByPostId(Long postId) {
         return commentRepository.findByPostId(postId)
                 .stream()
-                .map(commentMapper::toDto)
+                .map(comment -> mapper.map(comment, CommentResponseDto.class))
                 .toList();
     }
 
@@ -92,7 +95,7 @@ public class CommentServiceImpl implements CommentService {
         if (!comment.getPost().getId().equals(post.getId())) {
             throw new BlogApiException(HttpStatus.BAD_REQUEST, "Comment does not belong to post ");
         }
-        return commentMapper.toDto(comment);
+        return mapper.map(comment, CommentResponseDto.class);
     }
 
     @Override
@@ -114,7 +117,7 @@ public class CommentServiceImpl implements CommentService {
         Comment updateComment = commentRepository.save(comment);
         log.info("Successes, update comment by id {} for post by id {}, comment = {}",
                 postId, commentId, commentRequestDto);
-        return commentMapper.toDto(updateComment);
+        return mapper.map(updateComment, CommentResponseDto.class);
     }
 
     @Override

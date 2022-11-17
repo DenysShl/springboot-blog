@@ -15,13 +15,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "posts")
 public class Post {
@@ -41,7 +39,6 @@ public class Post {
     @OneToMany(mappedBy = "post",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
-    @ToString.Exclude
     private Set<Comment> comments = new HashSet<>();
 
     @Override
@@ -80,4 +77,3 @@ public class Post {
         return result;
     }
 }
-
