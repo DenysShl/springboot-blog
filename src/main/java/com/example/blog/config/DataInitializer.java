@@ -41,8 +41,8 @@ public class DataInitializer {
     private List<Post> getRandomPostsByStream(int quantity) {
         return IntStream.range(0, quantity)
                 .mapToObj(x -> getPost(
-                        "My post #" + x,
-                        "ASD Ver " + Math.round(Math.random()),
+                        "My post #" + (x + 1),
+                        "ASD Ver " + Math.round(Math.random() + 112),
                         "Content => " + Math.random()
                 ))
                 .toList();

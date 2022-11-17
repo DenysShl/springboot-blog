@@ -5,5 +5,6 @@ import com.example.blog.dto.PostResponseDto;
 import com.example.blog.model.PostResponse;
 
 public interface PostService extends GenericService<
-        PostResponseDto, PostRequestDto, PostResponse> {
+        PostResponseDto, PostRequestDto> {
+    PostResponse getAll(int pageNo, int pageSize, String sortBy, String sortDir);
 }

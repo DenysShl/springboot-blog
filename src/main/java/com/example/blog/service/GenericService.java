@@ -1,9 +1,7 @@
 package com.example.blog.service;
 
-public interface GenericService<T,V,U> {
+public interface GenericService<T, V> {
     T create(V entity);
-
-    U getAll(int pageNo, int pageSize, String sortBy, String sortDir);
 
     T getById(Long id);
 
