@@ -1,6 +1,8 @@
 package com.example.blog.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,19 +22,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors().disable()
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/v1/register")
+                .antMatchers(HttpMethod.GET, "/api/v1/**")
                 .permitAll()
-                .anyRequest().authenticated()
+                .anyRequest()
+                .authenticated()
                 .and()
                 .httpBasic();
     }
 
+    @Bean
     @Override
     protected UserDetailsService userDetailsService() {
         UserDetails den = User.builder()
                 .username("densh")
                 .password("147")
-                .roles()
+                .roles("ADMIN")
                 .build();
         return new InMemoryUserDetailsManager(den);
     }
