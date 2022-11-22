@@ -63,12 +63,14 @@ public class PostController {
         return ResponseEntity.ok(postService.getById(postId));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteById(@PathVariable("id") Long id) {
         postService.deleteById(id);
         return ResponseEntity.ok("Success, deleted post by id " + id);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("{id}")
     public ResponseEntity<PostResponseDto> update(
             @PathVariable("id") Long id,

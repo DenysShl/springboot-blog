@@ -35,8 +35,8 @@ public class PostMapperImpl implements GenericMapper<PostResponseDto, Post, Post
     public Post toModel(PostRequestDto postRequestDto) {
         Post post = new Post();
         post.setTitle(postRequestDto.getTitle());
-        post.setDescription(post.getDescription());
-        post.setContent(post.getContent());
+        post.setDescription(postRequestDto.getDescription());
+        post.setContent(postRequestDto.getContent());
         return post;
     }
 }
