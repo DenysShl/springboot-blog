@@ -2,9 +2,15 @@ package com.example.blog.config;
 
 import com.example.blog.model.Comment;
 import com.example.blog.model.Post;
+import com.example.blog.model.Role;
+import com.example.blog.model.User;
 import com.example.blog.repository.CommentRepository;
 import com.example.blog.repository.PostRepository;
+import com.example.blog.repository.RoleRepository;
+import com.example.blog.repository.UserRepository;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 import javax.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
@@ -12,11 +18,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class DataInitializer {
     private static final int QUANTITY_RANDOM_POSTS = 5;
+    private static final String PREFIX = "ROLE_";
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
 
-    public DataInitializer(PostRepository postRepository,
+    public DataInitializer(UserRepository userRepository,
+                           RoleRepository roleRepository,
+                           PostRepository postRepository,
                            CommentRepository commentRepository) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
     }
@@ -36,6 +49,20 @@ public class DataInitializer {
                 "solution number first by car", postCar));
         commentRepository.save(getComment("Tan", "tan@gmail.com",
                 "solution number first by film", postFilm));
+
+        Role adminRole = getRole(PREFIX + "ADMIN");
+        Role userRole = getRole(PREFIX + "USER");
+        roleRepository.saveAll(List.of(adminRole,userRole));
+
+        User den = getUser(
+                "2312@gmail.com",
+                "densh",
+                "$2a$10$rhhM/HogWRrrj03CCtpPE.s4X6rn/VmnsJF4a3GtwuzjzsfuzYbTO", //147
+                Set.of(adminRole),
+                "Den",
+                "Shl",
+                true);
+//        userRepository.save(den);
     }
 
     private List<Post> getRandomPostsByStream(int quantity) {
@@ -46,6 +73,27 @@ public class DataInitializer {
                         "Content => " + Math.random()
                 ))
                 .toList();
+    }
+
+    private User getUser(String email, String userName, String password, Set<Role> roles,
+                         String firstName, String lastName, boolean isStatus) {
+        User user = new User();
+        user.setEmail(email);
+        user.setUserName(userName);
+        user.setPassword(password);
+        user.setRoles(roles);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setStatus(isStatus);
+        user.setCreateDate(LocalDateTime.now());
+        user.setUpdateDate(LocalDateTime.now());
+        return user;
+    }
+
+    private Role getRole(String name) {
+        Role role = new Role();
+        role.setName(name);
+        return role;
     }
 
     private Post getPost(String title, String description, String content) {

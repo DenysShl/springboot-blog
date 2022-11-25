@@ -22,16 +22,4 @@ public class SpringbootAwsApplication {
     ModelMapper mapper() {
         return new ModelMapper();
     }
-
-//    @Bean
-//    CommandLineRunner commandLineRunner() {
-//        Boolean[] array = {true, true, false, true, true, false, true};
-//        return args -> {
-//            long count = Arrays.stream(array)
-//                    .filter(x -> x.equals(true))
-//                    .count();
-//
-//            log.info("Count 'true' = " + count);
-//        };
-//    }
 }
