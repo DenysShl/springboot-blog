@@ -9,10 +9,12 @@ import com.example.blog.repository.PostRepository;
 import com.example.blog.repository.RoleRepository;
 import com.example.blog.repository.UserRepository;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 import javax.annotation.PostConstruct;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -23,15 +25,17 @@ public class DataInitializer {
     private final RoleRepository roleRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public DataInitializer(UserRepository userRepository,
                            RoleRepository roleRepository,
                            PostRepository postRepository,
-                           CommentRepository commentRepository) {
+                           CommentRepository commentRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostConstruct
@@ -53,16 +57,16 @@ public class DataInitializer {
         Role adminRole = getRole(PREFIX + "ADMIN");
         Role userRole = getRole(PREFIX + "USER");
         roleRepository.saveAll(List.of(adminRole,userRole));
+        Role roleAdmin = roleRepository.findByName("ROLE_ADMIN").get();
 
         User den = getUser(
-                "2312@gmail.com",
+                "7860@gmail.com",
                 "densh",
-                "$2a$10$rhhM/HogWRrrj03CCtpPE.s4X6rn/VmnsJF4a3GtwuzjzsfuzYbTO", //147
-                Set.of(adminRole),
+                passwordEncoder.encode("147147147"),
+                Collections.singleton(roleAdmin),
                 "Den",
-                "Shl",
-                true);
-//        userRepository.save(den);
+                "Shl");
+        userRepository.save(den);
     }
 
     private List<Post> getRandomPostsByStream(int quantity) {
@@ -76,7 +80,7 @@ public class DataInitializer {
     }
 
     private User getUser(String email, String userName, String password, Set<Role> roles,
-                         String firstName, String lastName, boolean isStatus) {
+                         String firstName, String lastName) {
         User user = new User();
         user.setEmail(email);
         user.setUserName(userName);
@@ -84,7 +88,7 @@ public class DataInitializer {
         user.setRoles(roles);
         user.setFirstName(firstName);
         user.setLastName(lastName);
-        user.setStatus(isStatus);
+        user.setStatus(true);
         user.setCreateDate(LocalDateTime.now());
         user.setUpdateDate(LocalDateTime.now());
         return user;

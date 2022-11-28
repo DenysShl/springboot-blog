@@ -14,7 +14,7 @@ public class SpringbootAwsApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(SpringbootAwsApplication.class, args);
-        log.info("Start app at " + LocalDateTime.now()
+        log.info("Start application at: " + LocalDateTime.now()
                 .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")));
     }
 
