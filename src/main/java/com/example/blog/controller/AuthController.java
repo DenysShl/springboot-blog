@@ -9,6 +9,8 @@ import com.example.blog.repository.RoleRepository;
 import com.example.blog.repository.UserRepository;
 import com.example.blog.security.jwt.JwtAuthResponse;
 import com.example.blog.security.jwt.JwtTokenProvider;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import javax.validation.Valid;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Api(value = "Auth controller exposes siginin and signup REST APIs")
 @Import(SecurityConfig.class)
 @RestController
 @RequestMapping("api/v1/auth")
@@ -49,6 +52,7 @@ public class AuthController {
         this.tokenProvider = tokenProvider;
     }
 
+    @ApiOperation(value = "REST API to Register or Signup user to Blog app")
     @PostMapping("signin")
     public ResponseEntity<JwtAuthResponse> authentication(@Valid @RequestBody LoginDto loginDto) {
         Authentication authentication
@@ -60,6 +64,7 @@ public class AuthController {
         return ResponseEntity.ok(new JwtAuthResponse(token));
     }
 
+    @ApiOperation(value = "REST API to Signin or Login user to Blog app")
     @PostMapping("signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpDto signUpDto) {
         if (userRepository.existsByUserName(signUpDto.getUsername())) {
