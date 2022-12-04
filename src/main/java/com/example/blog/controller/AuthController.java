@@ -7,6 +7,8 @@ import com.example.blog.model.Role;
 import com.example.blog.model.User;
 import com.example.blog.repository.RoleRepository;
 import com.example.blog.repository.UserRepository;
+import com.example.blog.security.jwt.JwtAuthResponse;
+import com.example.blog.security.jwt.JwtTokenProvider;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import javax.validation.Valid;
@@ -28,23 +30,34 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("api/v1/auth")
 public class AuthController {
+    private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider tokenProvider;
+
     @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public AuthController(AuthenticationManager authenticationManager,
+                          UserRepository userRepository,
+                          RoleRepository roleRepository,
+                          PasswordEncoder passwordEncoder,
+                          JwtTokenProvider tokenProvider) {
+        this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.tokenProvider = tokenProvider;
+    }
 
     @PostMapping("signin")
-    public ResponseEntity<String> authentication(@Valid @RequestBody LoginDto loginDto) {
+    public ResponseEntity<JwtAuthResponse> authentication(@Valid @RequestBody LoginDto loginDto) {
         Authentication authentication
                 = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginDto.getUsernameOrEmail(), loginDto.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return new ResponseEntity<>("User signed-in successfully!.", HttpStatus.OK);
+        String token = tokenProvider.generateToken(authentication);
+        return ResponseEntity.ok(new JwtAuthResponse(token));
     }
 
     @PostMapping("signup")
@@ -53,7 +66,7 @@ public class AuthController {
             return new ResponseEntity<>("Username is ready taken!", HttpStatus.BAD_REQUEST);
         }
         if (userRepository.existsByEmail(signUpDto.getEmail())) {
-            return new ResponseEntity<>("Email is ready taken!",HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Email is ready taken!", HttpStatus.BAD_REQUEST);
         }
 
         User user = new User();

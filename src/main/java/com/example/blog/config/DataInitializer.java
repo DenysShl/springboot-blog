@@ -58,6 +58,7 @@ public class DataInitializer {
         Role userRole = getRole(PREFIX + "USER");
         roleRepository.saveAll(List.of(adminRole,userRole));
         Role roleAdmin = roleRepository.findByName("ROLE_ADMIN").get();
+        Role roleUser = roleRepository.findByName("ROLE_USER").get();
 
         User den = getUser(
                 "7860@gmail.com",
@@ -66,7 +67,14 @@ public class DataInitializer {
                 Collections.singleton(roleAdmin),
                 "Den",
                 "Shl");
-        userRepository.save(den);
+        User mak = getUser(
+                "79@gmail.com",
+                "maksh",
+                passwordEncoder.encode("147147147"),
+                Collections.singleton(roleUser),
+                "Mak",
+                "Shl");
+        userRepository.saveAll(List.of(den,mak));
     }
 
     private List<Post> getRandomPostsByStream(int quantity) {
