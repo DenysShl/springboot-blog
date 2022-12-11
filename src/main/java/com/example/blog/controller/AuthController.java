@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Api(value = "Auth controller exposes siginin and signup REST APIs")
+@Api(value = "Auth controller exposes signin and signup REST APIs")
 @Import(SecurityConfig.class)
 @RestController
 @RequestMapping("api/v1/auth")
